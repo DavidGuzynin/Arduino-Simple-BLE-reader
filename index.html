@@ -4,46 +4,16 @@
   <title>Arduino BLE Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body
-    { 
-      font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; 
-    }
-    #connect 
-    { 
-      background: #4CAF50; color: white; font-size: 28px; padding: 25px 50px; border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s; 
-    }
-    #connect:hover 
-    { 
-      background: #45a049; 
-    }
-    #status 
-    {
-      margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; 
-    }
-    #signal 
-    { 
-      margin-top: 10px; font-size: 40px; color: #2196F3; 
-    }
-    #messages 
-    { 
-      margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; 
-    }
-    #commandBox 
-    { 
-      margin-top: 20px; 
-    }
-    #commandInput
-    {
-      font-size: 18px; padding: 10px; width: 70%; border-radius: 8px; border: 1px solid #ccc; 
-    }
-    #sendBtn 
-    { 
-      font-size: 18px; padding: 10px 20px; margin-left: 10px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; 
-    }
-    #sendBtn:hover 
-    { 
-      background: #1976D2; 
-    }
+    body { font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; }
+    #connect { background: #4CAF50; color: white; font-size: 28px; padding: 25px 50px; border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s; }
+    #connect:hover { background: #45a049; }
+    #status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; }
+    #signal { margin-top: 10px; font-size: 40px; color: #2196F3; }
+    #messages { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; }
+    #commandBox { margin-top: 20px; }
+    #commandInput { font-size: 18px; padding: 10px; width: 70%; border-radius: 8px; border: 1px solid #ccc; }
+    #sendBtn { font-size: 18px; padding: 10px 20px; margin-left: 10px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    #sendBtn:hover { background: #1976D2; }
   </style>
 </head>
 <body>
@@ -65,13 +35,11 @@
     let characteristic;
     let device;
 
-    if (Notification.permission !== "granted") 
-    {
+    if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
 
-    function updateSignal(rssi) 
-    {
+    function updateSignal(rssi) {
       const signalDiv = document.getElementById("signal");
       if (rssi > -60) signalDiv.innerText = "Excellent";
       else if (rssi > -75) signalDiv.innerText = "Good";
@@ -79,10 +47,8 @@
       else signalDiv.innerText = "Too weak";
     }
 
-    document.getElementById("connect").onclick = async () => 
-      {
-      try 
-      {
+    document.getElementById("connect").onclick = async () => {
+      try {
         device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
@@ -104,8 +70,7 @@
         document.getElementById("status").innerText = "Status: Connected ✅";
         updateSignal(-65);
 
-        device.addEventListener('gattserverdisconnected', () => 
-          {
+        device.addEventListener('gattserverdisconnected', () => {
           document.getElementById("status").innerText = "Status: Disconnected ❌";
           document.getElementById("signal").innerText = "❌";
         });
@@ -117,33 +82,28 @@
       }
     };
 
-    async function sendMessage() 
-    {
+    async function sendMessage() {
       const cmd = document.getElementById("commandInput").value.trim();
-      if (cmd && characteristic) 
-      {
+      if (cmd && characteristic) {
         const encoder = new TextEncoder();
         try {
-          if (characteristic.writeValueWithoutResponse) 
-          {
+          if (characteristic.writeValueWithoutResponse) {
             await characteristic.writeValueWithoutResponse(encoder.encode(cmd));
-          } 
-          else 
-          {
+          } else {
             await characteristic.writeValue(encoder.encode(cmd));
           }
           const msgDiv = document.getElementById("messages");
           msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
           document.getElementById("commandInput").value = "";
-        } 
-        catch (err) 
-        {
+        } catch (err) {
           console.error("Send failed:", err);
           alert("Failed to send message");
         }
       }
     }
-    document.getElementById("sendBtn").addEventListener("pointerup", sendMessage);
+
+    // Use only click → avoids duplication and works everywhere
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
   </script>
 </body>
 </html>
