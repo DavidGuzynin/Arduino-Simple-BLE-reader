@@ -25,7 +25,7 @@
 
   <div id="commandBox">
     <input id="commandInput" type="text" placeholder="Type message or command here...">
-    <button id="sendBtn">Send</button>
+    <button id="sendBtn" type="button">Send</button>
   </div>
 
   <script>
@@ -62,9 +62,13 @@
         characteristic.addEventListener("characteristicvaluechanged", event => {
           const value = new TextDecoder().decode(event.target.value);
           const msgDiv = document.getElementById("messages");
-          msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
-          msgDiv.scrollTop = msgDiv.scrollHeight;
-          new Notification("Arduino Message", { body: value });
+
+          // Filter out empty or duplicate echoes if needed
+          if (value && value.trim().length > 0) {
+            msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+            new Notification("Arduino Message", { body: value });
+          }
         });
 
         document.getElementById("status").innerText = "Status: Connected ✅";
@@ -82,9 +86,14 @@
       }
     };
 
+    let lastSent = 0;
     async function sendMessage() {
       const cmd = document.getElementById("commandInput").value.trim();
       if (cmd && characteristic) {
+        const now = Date.now();
+        if (now - lastSent < 300) return; // prevent double fire
+        lastSent = now;
+
         const encoder = new TextEncoder();
         try {
           if (characteristic.writeValueWithoutResponse) {
@@ -102,8 +111,9 @@
       }
     }
 
-    // Use only click → works on laptop and mobile
+    // Works on laptop and mobile
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("sendBtn").addEventListener("touchend", sendMessage);
 
     // Optional: allow Enter key to send
     document.getElementById("commandInput").addEventListener("keypress", function(e) {
