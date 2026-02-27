@@ -59,8 +59,8 @@
   <div id="messages"><strong>Messages will appear here...</strong></div>
 
   <script>
-  const serviceUUID = "00001234-0000-1000-8000-00805f9b34fb";
-  const charUUID    = "00005678-0000-1000-8000-00805f9b34fb";
+    const serviceUUID = "00001234-0000-1000-8000-00805f9b34fb";
+    const charUUID    = "00005678-0000-1000-8000-00805f9b34fb";
 
     let characteristic;
     let device;
@@ -75,19 +75,22 @@
     }
 
     document.getElementById("connect").onclick = async () => 
-    {
+      {
       try 
       {
-        device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [serviceUUID] }]
+        device = await navigator.bluetooth.requestDevice
+        ({
+          acceptAllDevices: true,
+          optionalServices: [serviceUUID]
         });
+
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(serviceUUID);
         characteristic = await service.getCharacteristic(charUUID);
 
         await characteristic.startNotifications();
         characteristic.addEventListener("characteristicvaluechanged", event => 
-        {
+          {
           const value = new TextDecoder().decode(event.target.value);
           const msgDiv = document.getElementById("messages");
           msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
@@ -109,9 +112,9 @@
         updateSignal(-65);
 
         device.addEventListener('gattserverdisconnected', () => 
-        {
+          {
           document.getElementById("status").innerText = "Status: Disconnected ❌";
-          document.getElementById("signal").innerText = "📶";
+          document.getElementById("signal").innerText = "❌";
         });
 
         alert("Connected! Waiting for messages...");
@@ -125,4 +128,3 @@
   </script>
 </body>
 </html>
-
