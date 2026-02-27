@@ -4,12 +4,30 @@
   <title>Arduino BLE Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; }
-    #connect { background: #4CAF50; color: white; font-size: 28px; padding: 25px 50px; border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s; }
-    #connect:hover { background: #45a049; }
-    #status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; }
-    #signal { margin-top: 10px; font-size: 40px; color: #2196F3; }
-    #messages { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; }
+    body 
+    { 
+      font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; 
+    }
+    #connect 
+    { 
+      background: #4CAF50; color: white; font-size: 28px; padding: 25px 50px; border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s; 
+    }
+    #connect:hover 
+    { 
+      background: #45a049; 
+    }
+    #status 
+    { 
+      margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; 
+    }
+    #signal 
+    { 
+      margin-top: 10px; font-size: 40px; color: #2196F3; 
+    }
+    #messages 
+    { 
+      margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; 
+    }
   </style>
 </head>
 <body>
@@ -26,11 +44,13 @@
     let characteristic;
     let device;
 
-    if (Notification.permission !== "granted") {
+    if (Notification.permission !== "granted") 
+    {
       Notification.requestPermission();
     }
 
-    function updateSignal(rssi) {
+    function updateSignal(rssi) 
+    {
       const signalDiv = document.getElementById("signal");
       if (rssi > -60) signalDiv.innerText = "Excellent";
       else if (rssi > -75) signalDiv.innerText = "Good";
@@ -38,8 +58,10 @@
       else signalDiv.innerText = "Too weak";
     }
 
-    document.getElementById("connect").onclick = async () => {
-      try {
+    document.getElementById("connect").onclick = async () => 
+      {
+      try 
+      {
         device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
@@ -50,7 +72,8 @@
         characteristic = await service.getCharacteristic(charUUID);
 
         await characteristic.startNotifications();
-        characteristic.addEventListener("characteristicvaluechanged", event => {
+        characteristic.addEventListener("characteristicvaluechanged", event => 
+          {
           const value = new TextDecoder().decode(event.target.value);
           const msgDiv = document.getElementById("messages");
 
@@ -64,13 +87,16 @@
         document.getElementById("status").innerText = "Status: Connected ✅";
         updateSignal(-65);
 
-        device.addEventListener('gattserverdisconnected', () => {
+        device.addEventListener('gattserverdisconnected', () => 
+          {
           document.getElementById("status").innerText = "Status: Disconnected ❌";
           document.getElementById("signal").innerText = "❌";
         });
 
         alert("Connected! Waiting for messages...");
-      } catch (error) {
+      } 
+      catch (error) 
+      {
         console.error(error);
         alert("Connection failed: " + error);
       }
