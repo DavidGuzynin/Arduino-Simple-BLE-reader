@@ -4,7 +4,7 @@
   <title>Arduino BLE Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body 
+    body
     { 
       font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; 
     }
@@ -17,7 +17,7 @@
       background: #45a049; 
     }
     #status 
-    { 
+    {
       margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; 
     }
     #signal 
@@ -32,8 +32,8 @@
     { 
       margin-top: 20px; 
     }
-    #commandInput 
-    { 
+    #commandInput
+    {
       font-size: 18px; padding: 10px; width: 70%; border-radius: 8px; border: 1px solid #ccc; 
     }
     #sendBtn 
@@ -93,8 +93,7 @@
         characteristic = await service.getCharacteristic(charUUID);
 
         await characteristic.startNotifications();
-        characteristic.addEventListener("characteristicvaluechanged", event => 
-          {
+        characteristic.addEventListener("characteristicvaluechanged", event => {
           const value = new TextDecoder().decode(event.target.value);
           const msgDiv = document.getElementById("messages");
           msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
@@ -124,8 +123,7 @@
       if (cmd && characteristic) 
       {
         const encoder = new TextEncoder();
-        try 
-        {
+        try {
           if (characteristic.writeValueWithoutResponse) 
           {
             await characteristic.writeValueWithoutResponse(encoder.encode(cmd));
@@ -145,9 +143,7 @@
         }
       }
     }
-
-    document.getElementById("sendBtn").addEventListener("click", sendMessage);
-    document.getElementById("sendBtn").addEventListener("touchend", sendMessage);
+    document.getElementById("sendBtn").addEventListener("pointerup", sendMessage);
   </script>
 </body>
 </html>
