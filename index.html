@@ -23,59 +23,41 @@
       transition: background 0.3s;
     }
     #connect:hover 
-    {
-      background: #45a049;
+    { 
+      background: #45a049; 
     }
     #status 
-    {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
+    { 
+      margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; 
     }
     #signal 
-    {
-      margin-top: 10px;
-      font-size: 40px;
-      color: #2196F3;
+    { 
+      margin-top: 10px; font-size: 40px; color: #2196F3; 
     }
     #messages 
     {
-      margin-top: 30px;
-      padding: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      max-height: 300px;
-      overflow-y: auto;
-      text-align: left;
+      margin-top: 30px; padding: 20px; background: #fff;
+      border: 1px solid #ccc; border-radius: 12px;
+      max-height: 300px; overflow-y: auto; text-align: left;
     }
     #commandBox 
-    {
-      margin-top: 20px;
+    { 
+      margin-top: 20px; 
     }
     #commandInput 
     {
-      font-size: 18px;
-      padding: 10px;
-      width: 70%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      font-size: 18px; padding: 10px; width: 70%;
+      border-radius: 8px; border: 1px solid #ccc;
     }
     #sendBtn 
     {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin-left: 10px;
-      background: #2196F3;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      font-size: 18px; padding: 10px 20px; margin-left: 10px;
+      background: #2196F3; color: white; border: none;
+      border-radius: 8px; cursor: pointer;
     }
     #sendBtn:hover 
-    {
-      background: #1976D2;
+    { 
+      background: #1976D2; 
     }
   </style>
 </head>
@@ -117,7 +99,7 @@
       try 
       {
         device = await navigator.bluetooth.requestDevice
-        ({
+          ({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
         });
@@ -133,7 +115,6 @@
           const msgDiv = document.getElementById("messages");
           msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
           msgDiv.scrollTop = msgDiv.scrollHeight;
-
           new Notification("Arduino Message", { body: value });
         });
 
