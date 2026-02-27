@@ -26,7 +26,7 @@
     {
       background: #45a049;
     }
-    #status
+    #status 
     {
       margin-top: 20px;
       font-size: 20px;
@@ -116,7 +116,8 @@
       {
       try 
       {
-        device = await navigator.bluetooth.requestDevice({
+        device = await navigator.bluetooth.requestDevice
+        ({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
         });
@@ -168,4 +169,3 @@
   </script>
 </body>
 </html>
-
