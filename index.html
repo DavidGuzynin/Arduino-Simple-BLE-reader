@@ -10,10 +10,6 @@
     #status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #333; }
     #signal { margin-top: 10px; font-size: 40px; color: #2196F3; }
     #messages { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; }
-    #commandBox { margin-top: 20px; }
-    #commandInput { font-size: 18px; padding: 10px; width: 70%; border-radius: 8px; border: 1px solid #ccc; }
-    #sendBtn { font-size: 18px; padding: 10px 20px; margin-left: 10px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; }
-    #sendBtn:hover { background: #1976D2; }
   </style>
 </head>
 <body>
@@ -22,11 +18,6 @@
   <div id="status">Status: Not connected</div>
   <div id="signal">❌</div>
   <div id="messages"><strong>Messages will appear here...</strong></div>
-
-  <div id="commandBox">
-    <input id="commandInput" type="text" placeholder="Type message or command here...">
-    <button id="sendBtn" type="button">Send</button>
-  </div>
 
   <script>
     const serviceUUID = "00001234-0000-1000-8000-00805f9b34fb";
@@ -63,7 +54,6 @@
           const value = new TextDecoder().decode(event.target.value);
           const msgDiv = document.getElementById("messages");
 
-          // Filter out empty or duplicate echoes if needed
           if (value && value.trim().length > 0) {
             msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
             msgDiv.scrollTop = msgDiv.scrollHeight;
@@ -85,41 +75,6 @@
         alert("Connection failed: " + error);
       }
     };
-
-    let lastSent = 0;
-async function sendMessage() {
-  const cmd = document.getElementById("commandInput").value.trim();
-  if (cmd && characteristic) {
-    const now = Date.now();
-    if (now - lastSent < 300) return; // prevent double fire
-    lastSent = now;
-
-    const encoder = new TextEncoder();
-    try {
-      // Always use writeValue (more reliable on mobile)
-      await characteristic.writeValue(encoder.encode(cmd));
-
-      const msgDiv = document.getElementById("messages");
-      msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
-      document.getElementById("commandInput").value = "";
-    } catch (err) {
-      console.error("Send failed:", err);
-      alert("Failed to send message");
-    }
-  }
-}
-
-    // Works on laptop and mobile
-    document.getElementById("sendBtn").addEventListener("click", sendMessage);
-    document.getElementById("sendBtn").addEventListener("touchend", sendMessage);
-
-    // Optional: allow Enter key to send
-    document.getElementById("commandInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
-    });
   </script>
 </body>
 </html>
-
