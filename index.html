@@ -4,7 +4,7 @@
   <title>Arduino BLE Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body 
+    body
     {
       font-family: Arial, sans-serif;
       background: #f0f4f8;
@@ -26,7 +26,7 @@
     {
       background: #45a049;
     }
-    #status 
+    #status
     {
       margin-top: 20px;
       font-size: 20px;
@@ -49,6 +49,31 @@
       max-height: 300px;
       overflow-y: auto;
       text-align: left;
+    }
+    @media (max-width: 600px) 
+    {
+      body
+      {
+        padding: 20px;
+      }
+      #connect 
+      {
+        font-size: 22px;
+        padding: 18px 36px;
+      }
+      #status 
+      {
+        font-size: 18px;
+      }
+      #signal 
+      {
+        font-size: 30px;
+      }
+      #messages 
+      {
+        font-size: 16px;
+        max-height: 200px;
+      }
     }
   </style>
 </head>
@@ -80,7 +105,7 @@
       else signalDiv.innerText = "Too weak";
     }
 
-    document.getElementById("connect").onclick = async () => 
+    document.getElementById("connect").onclick = async () =>
       {
       try 
       {
@@ -107,7 +132,8 @@
         document.getElementById("status").innerText = "Status: Connected ✅";
         updateSignal(-65);
 
-        device.addEventListener('gattserverdisconnected', () => {
+        device.addEventListener('gattserverdisconnected', () => 
+          {
           document.getElementById("status").innerText = "Status: Disconnected ❌";
           document.getElementById("signal").innerText = "❌";
         });
