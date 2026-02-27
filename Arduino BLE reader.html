@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Arduino BLE Viewer</title>
+  <style>
+    body 
+    {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 40px;
+    }
+    #connect 
+    {
+      background: #4CAF50;
+      color: white;
+      font-size: 28px;
+      padding: 25px 50px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #connect:hover 
+    {
+      background: #45a049;
+    }
+    #status 
+    {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    #signal 
+    {
+      margin-top: 10px;
+      font-size: 40px;
+      color: #2196F3;
+    }
+    #messages 
+    {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Arduino BLE Viewer</h1>
+  <button id="connect">🔗 Connect to Arduino</button>
+  <div id="status">Status: Not connected</div>
+  <div id="signal">❌</div>
+  <div id="messages"><strong>Messages will appear here...</strong></div>
+
+  <script>
+    const serviceUUID = "00001234-0000-1000-8000-00805f9b34fb";
+    const charUUID    = "00005678-0000-1000-8000-00805f9b34fb";
+
+    let characteristic;
+    let device;
+
+    function updateSignal(rssi) 
+    {
+      const signalDiv = document.getElementById("signal");
+      if (rssi > -60) signalDiv.innerText = "Excellent";
+      else if (rssi > -75) signalDiv.innerText = "Good";
+      else if (rssi > -90) signalDiv.innerText = "Weak";
+      else signalDiv.innerText = "Too weak";
+    }
+
+    document.getElementById("connect").onclick = async () => 
+    {
+      try 
+      {
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ services: [serviceUUID] }]
+        });
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(serviceUUID);
+        characteristic = await service.getCharacteristic(charUUID);
+
+        await characteristic.startNotifications();
+        characteristic.addEventListener("characteristicvaluechanged", event => 
+        {
+          const value = new TextDecoder().decode(event.target.value);
+          const msgDiv = document.getElementById("messages");
+          msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
+          msgDiv.scrollTop = msgDiv.scrollHeight;
+
+          if (Notification.permission === "granted") 
+          {
+            new Notification("Arduino Message", { body: value });
+          }
+        });
+
+        document.getElementById("status").innerText = "Status: Connected ✅";
+
+        if (Notification.permission !== "granted") 
+        {
+          Notification.requestPermission();
+        }
+
+        updateSignal(-65);
+
+        device.addEventListener('gattserverdisconnected', () => 
+        {
+          document.getElementById("status").innerText = "Status: Disconnected ❌";
+          document.getElementById("signal").innerText = "📶";
+        });
+
+        alert("Connected! Waiting for messages...");
+      } 
+      catch (error) 
+      {
+        console.error(error);
+        alert("Connection failed: " + error);
+      }
+    };
+  </script>
+</body>
+</html>
