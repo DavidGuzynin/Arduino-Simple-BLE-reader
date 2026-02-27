@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Arduino BLE Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body 
     {
@@ -65,6 +66,11 @@
     let characteristic;
     let device;
 
+    if (Notification.permission !== "granted") 
+    {
+      Notification.requestPermission();
+    }
+
     function updateSignal(rssi) 
     {
       const signalDiv = document.getElementById("signal");
@@ -78,8 +84,7 @@
       {
       try 
       {
-        device = await navigator.bluetooth.requestDevice
-        ({
+        device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
         });
@@ -96,23 +101,13 @@
           msgDiv.innerHTML += `<p><strong>Arduino:</strong> ${value}</p>`;
           msgDiv.scrollTop = msgDiv.scrollHeight;
 
-          if (Notification.permission === "granted") 
-          {
-            new Notification("Arduino Message", { body: value });
-          }
+          new Notification("Arduino Message", { body: value });
         });
 
         document.getElementById("status").innerText = "Status: Connected ✅";
-
-        if (Notification.permission !== "granted") 
-        {
-          Notification.requestPermission();
-        }
-
         updateSignal(-65);
 
-        device.addEventListener('gattserverdisconnected', () => 
-          {
+        device.addEventListener('gattserverdisconnected', () => {
           document.getElementById("status").innerText = "Status: Disconnected ❌";
           document.getElementById("signal").innerText = "❌";
         });
