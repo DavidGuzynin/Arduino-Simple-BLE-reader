@@ -5,22 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body 
-    {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
-      text-align: center;
-      padding: 40px;
+    { 
+      font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; 
     }
     #connect 
-    {
-      background: #4CAF50;
-      color: white;
-      font-size: 28px;
-      padding: 25px 50px;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
+    { 
+      background: #4CAF50; color: white; font-size: 28px; padding: 25px 50px; border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s; 
     }
     #connect:hover 
     { 
@@ -35,25 +25,20 @@
       margin-top: 10px; font-size: 40px; color: #2196F3; 
     }
     #messages 
-    {
-      margin-top: 30px; padding: 20px; background: #fff;
-      border: 1px solid #ccc; border-radius: 12px;
-      max-height: 300px; overflow-y: auto; text-align: left;
+    { 
+      margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; max-height: 300px; overflow-y: auto; text-align: left; 
     }
     #commandBox 
     { 
       margin-top: 20px; 
     }
     #commandInput 
-    {
-      font-size: 18px; padding: 10px; width: 70%;
-      border-radius: 8px; border: 1px solid #ccc;
+    { 
+      font-size: 18px; padding: 10px; width: 70%; border-radius: 8px; border: 1px solid #ccc; 
     }
     #sendBtn 
-    {
-      font-size: 18px; padding: 10px 20px; margin-left: 10px;
-      background: #2196F3; color: white; border: none;
-      border-radius: 8px; cursor: pointer;
+    { 
+      font-size: 18px; padding: 10px 20px; margin-left: 10px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; 
     }
     #sendBtn:hover 
     { 
@@ -98,8 +83,7 @@
       {
       try 
       {
-        device = await navigator.bluetooth.requestDevice
-          ({
+        device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [serviceUUID]
         });
@@ -128,25 +112,42 @@
         });
 
         alert("Connected! Waiting for messages...");
-      } 
-      catch (error) 
-      {
+      } catch (error) {
         console.error(error);
         alert("Connection failed: " + error);
       }
     };
 
-    document.getElementById("sendBtn").onclick = async () => 
-      {
+    async function sendMessage() 
+    {
       const cmd = document.getElementById("commandInput").value.trim();
-      if (cmd && characteristic) {
+      if (cmd && characteristic) 
+      {
         const encoder = new TextEncoder();
-        await characteristic.writeValue(encoder.encode(cmd));
-        const msgDiv = document.getElementById("messages");
-        msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
-        document.getElementById("commandInput").value = "";
+        try 
+        {
+          if (characteristic.writeValueWithoutResponse) 
+          {
+            await characteristic.writeValueWithoutResponse(encoder.encode(cmd));
+          } 
+          else 
+          {
+            await characteristic.writeValue(encoder.encode(cmd));
+          }
+          const msgDiv = document.getElementById("messages");
+          msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
+          document.getElementById("commandInput").value = "";
+        } 
+        catch (err) 
+        {
+          console.error("Send failed:", err);
+          alert("Failed to send message");
+        }
       }
-    };
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("sendBtn").addEventListener("touchend", sendMessage);
   </script>
 </body>
 </html>
