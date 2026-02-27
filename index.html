@@ -87,29 +87,27 @@
     };
 
     let lastSent = 0;
-    async function sendMessage() {
-      const cmd = document.getElementById("commandInput").value.trim();
-      if (cmd && characteristic) {
-        const now = Date.now();
-        if (now - lastSent < 300) return; // prevent double fire
-        lastSent = now;
+async function sendMessage() {
+  const cmd = document.getElementById("commandInput").value.trim();
+  if (cmd && characteristic) {
+    const now = Date.now();
+    if (now - lastSent < 300) return; // prevent double fire
+    lastSent = now;
 
-        const encoder = new TextEncoder();
-        try {
-          if (characteristic.writeValueWithoutResponse) {
-            await characteristic.writeValueWithoutResponse(encoder.encode(cmd));
-          } else {
-            await characteristic.writeValue(encoder.encode(cmd));
-          }
-          const msgDiv = document.getElementById("messages");
-          msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
-          document.getElementById("commandInput").value = "";
-        } catch (err) {
-          console.error("Send failed:", err);
-          alert("Failed to send message");
-        }
-      }
+    const encoder = new TextEncoder();
+    try {
+      // Always use writeValue (more reliable on mobile)
+      await characteristic.writeValue(encoder.encode(cmd));
+
+      const msgDiv = document.getElementById("messages");
+      msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
+      document.getElementById("commandInput").value = "";
+    } catch (err) {
+      console.error("Send failed:", err);
+      alert("Failed to send message");
     }
+  }
+}
 
     // Works on laptop and mobile
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
@@ -124,3 +122,4 @@
   </script>
 </body>
 </html>
+
