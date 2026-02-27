@@ -4,7 +4,7 @@
   <title>Arduino BLE Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body
+    body 
     {
       font-family: Arial, sans-serif;
       background: #f0f4f8;
@@ -50,30 +50,32 @@
       overflow-y: auto;
       text-align: left;
     }
-    @media (max-width: 600px) 
+    #commandBox 
     {
-      body
-      {
-        padding: 20px;
-      }
-      #connect 
-      {
-        font-size: 22px;
-        padding: 18px 36px;
-      }
-      #status 
-      {
-        font-size: 18px;
-      }
-      #signal 
-      {
-        font-size: 30px;
-      }
-      #messages 
-      {
-        font-size: 16px;
-        max-height: 200px;
-      }
+      margin-top: 20px;
+    }
+    #commandInput 
+    {
+      font-size: 18px;
+      padding: 10px;
+      width: 70%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    #sendBtn 
+    {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin-left: 10px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #sendBtn:hover 
+    {
+      background: #1976D2;
     }
   </style>
 </head>
@@ -83,6 +85,11 @@
   <div id="status">Status: Not connected</div>
   <div id="signal">❌</div>
   <div id="messages"><strong>Messages will appear here...</strong></div>
+
+  <div id="commandBox">
+    <input id="commandInput" type="text" placeholder="Type command here...">
+    <button id="sendBtn">Send</button>
+  </div>
 
   <script>
     const serviceUUID = "00001234-0000-1000-8000-00805f9b34fb";
@@ -105,7 +112,7 @@
       else signalDiv.innerText = "Too weak";
     }
 
-    document.getElementById("connect").onclick = async () =>
+    document.getElementById("connect").onclick = async () => 
       {
       try 
       {
@@ -144,6 +151,18 @@
       {
         console.error(error);
         alert("Connection failed: " + error);
+      }
+    };
+
+    document.getElementById("sendBtn").onclick = async () => 
+      {
+      const cmd = document.getElementById("commandInput").value.trim();
+      if (cmd && characteristic) {
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(cmd));
+        const msgDiv = document.getElementById("messages");
+        msgDiv.innerHTML += `<p><strong>You:</strong> ${cmd}</p>`;
+        document.getElementById("commandInput").value = "";
       }
     };
   </script>
