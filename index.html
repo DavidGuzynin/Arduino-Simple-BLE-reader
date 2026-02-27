@@ -102,8 +102,15 @@
       }
     }
 
-    // Use only click → avoids duplication and works everywhere
+    // Use only click → works on laptop and mobile
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+    // Optional: allow Enter key to send
+    document.getElementById("commandInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
   </script>
 </body>
 </html>
